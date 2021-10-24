@@ -1,0 +1,351 @@
+{
+	"info": {
+		"_postman_id": "ed1cc204-ddc5-4b07-90a0-34c4653e29a9",
+		"name": "Serverless Travel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Travel Package",
+			"item": [
+				{
+					"name": "Create Travel",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"location\": \"location 01\",\r\n  \"name\": \"name 01\",\r\n  \"openDate\": \"2022-01-01\",\r\n  \"endDate\": \"2022-12-31\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}travelPackage",
+							"host": [
+								"{{apiId}}travelPackage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atachment Url",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"location\": \"location 01\",\r\n  \"name\": \"name 01\",\r\n  \"openDate\": \"2022-01-01\",\r\n  \"endDate\": \"2022-12-31\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}travelPackage/{travelPackageId}/attachment",
+							"host": [
+								"{{apiId}}travelPackage"
+							],
+							"path": [
+								"{travelPackageId}",
+								"attachment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Travels",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}travelPackage",
+							"host": [
+								"{{apiId}}travelPackage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Travel",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"location\": \"testetestsers \",\r\n  \"name\": \"brtstssdasil\",\r\n  \"openDate\": \"2022-01-01\",\r\n  \"endDate\": \"2022-12-31\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}travelPackage/{travelPackageId}",
+							"host": [
+								"{{apiId}}travelPackage"
+							],
+							"path": [
+								"{travelPackageId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Travel",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}travelPackage/{travelPackageId}",
+							"host": [
+								"{{apiId}}travelPackage"
+							],
+							"path": [
+								"{travelPackageId}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reservation",
+			"item": [
+				{
+					"name": "Delete Reservation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}reservation/{reservationId}",
+							"host": [
+								"{{apiId}}reservation"
+							],
+							"path": [
+								"{reservationId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reservations for User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}reservation",
+							"host": [
+								"{{apiId}}reservation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"location\": \"location 01\",\r\n  \"name\": \"name 01\",\r\n  \"openDate\": \"2022-01-01\",\r\n  \"endDate\": \"2022-12-31\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}reservation",
+							"host": [
+								"{{apiId}}reservation"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth/User",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userName\": \"teste\",\r\n  \"password\": \"123456\",\r\n  \"email\": \"teste@teste.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}user",
+							"host": [
+								"{{apiId}}user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"123456\",\r\n  \"email\": \"teste@teste.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiId}}login",
+							"host": [
+								"{{apiId}}login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiId",
+			"value": "https://ukmjdrqjqj.execute-api.sa-east-1.amazonaws.com/dev/"
+		},
+		{
+			"key": "authToken",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZkZDY2MDA2LTU2Y2QtNGViZi04MGUxLWJjYTYyOWI2M2QyZiIsImlhdCI6MTYzMjQ0NTM2NCwiZXhwIjoxNjM1NDQ1MzY0fQ.pIvXRduoQkDHa7D-szvdV1khgwIC0-mx-Cobf-5MKBA"
+		}
+	]
+}

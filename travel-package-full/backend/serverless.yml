@@ -1,0 +1,432 @@
+org: dalyleide
+app: capstone-serverless-travel
+service:
+  name: capstone-serverless-travel
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-aws-documentation
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'sa-east-1'}
+
+  environment:
+    USER_TABLE: user-${self:provider.stage}
+    RESERVATION_TABLE: reservation-${self:provider.stage}
+    RESERVATION_ID_INDEX: reservationIdIndex
+    TRAVEL_PACKAGE_TABLE: travel_package-${self:provider.stage}
+    IMAGES_S3_BUCKET: serverless-travel-project-${self:provider.stage}
+    SECRET: T&R/EAD?FSDF
+
+  tracing: 
+    lambda: true
+    apiGatway: true
+  iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESERVATION_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESERVATION_TABLE}/index/${self:provider.environment.RESERVATION_ID_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRAVEL_PACKAGE_TABLE}
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
+
+custom:
+  topicName: imagesTopic-${self:provider.stage}
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Serverless Travel Reservation API
+        description: Serverless application managing Travel Packages and make a reservation 
+    models:
+      - name: CreateTravelPackageRequest
+        contentType: application/json
+        schema: ${file(src/models/create-travel-package-request.json)}
+      - name: UpdateTravelPackageRequest
+        contentType: application/json
+        schema: ${file(src/models/update-travel-package-request.json)}
+
+functions:
+  Auth:
+    handler: src/lambda/auth/authorizator.handler
+
+################################################################################
+#User endpoints
+################################################################################
+
+  CreateUser:
+    handler: src/lambda/auth/createUser.handler
+    events:
+      - http:
+          method: post
+          path: user
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+          
+  UserLogin:
+    handler: src/lambda/auth/userLogin.handler
+    events:
+      - http:
+          method: post
+          path: login
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+################################################################################
+#TravelPackage endpoints
+################################################################################
+  GetTravelPackage:
+    handler: src/lambda/http/package/getTravelPackage.handler
+    events:
+      - http:
+          method: get
+          path: travelPackage
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRAVEL_PACKAGE_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+  CreateTravelPackage:
+    handler: src/lambda/http/package/createTravelPackage.handler
+    events:
+      - http:
+          method: post
+          path: travelPackage
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRAVEL_PACKAGE_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+  UpdateTravelPackage:
+    handler: src/lambda/http/package/updateTravelPackage.handler
+    events:
+      - http:
+          method: patch
+          path: travelPackage/{travelPackageId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRAVEL_PACKAGE_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+  GenerateUploadUrl:
+    handler: src/lambda/http/package/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: travelPackage/{travelPackageId}/attachment
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+          - s3:'*'
+        Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRAVEL_PACKAGE_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+  DeleteTravelPackage:
+    handler: src/lambda/http/package/deleteTravelPackage.handler
+    events:
+      - http:
+          method: delete
+          path: travelPackage/{travelPackageId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRAVEL_PACKAGE_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+################################################################################
+#Reservation endpoints
+################################################################################
+  GetReservation:
+    handler: src/lambda/http/reservation/getReservation.handler
+    events:
+      - http:
+          method: get
+          path: reservation
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESERVATION_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+  CreateReservation:
+    handler: src/lambda/http/reservation/createReservation.handler
+    events:
+      - http:
+          method: post
+          path: reservation
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESERVATION_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+  DeleteReservation:
+    handler: src/lambda/http/reservation/deleteReservation.handler
+    events:
+      - http:
+          method: delete
+          path: reservation/{reservationId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESERVATION_TABLE}
+      - Effect: Allow 
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+resources:
+  Resources:
+  
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,PATCH'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    RequestBodyValidator: 
+      Type: AWS::ApiGateway::RequestValidator
+      Properties: 
+        Name: 'request-body-validator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: true
+
+    TravelPackageDynamoDBTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: travelPackageId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: travelPackageId
+            KeyType: HASH 
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
+        TableName: ${self:provider.environment.TRAVEL_PACKAGE_TABLE}
+
+    UserDynamoDBTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+          - AttributeName: userId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
+        TableName: ${self:provider.environment.USER_TABLE}
+
+    ReservationDynamoDBTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: reservationId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: reservationId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
+        TableName: ${self:provider.environment.RESERVATION_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.RESERVATION_ID_INDEX}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+    AttachmentsBucket:
+          Type: AWS::S3::Bucket
+          Properties:
+            BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
+            CorsConfiguration:
+              CorsRules:
+                -
+                  AllowedOrigins:
+                    - '*'
+                  AllowedHeaders:
+                    - '*'
+                  AllowedMethods:
+                    - GET
+                    - PUT
+                    - POST
+                    - DELETE
+                    - HEAD
+                  MaxAge: 3000
+    BucketPolicy:
+          Type: AWS::S3::BucketPolicy
+          Properties:
+            PolicyDocument:
+              Id: MyPolicy
+              Version: "2012-10-17"
+              Statement:
+                - Sid: PublicReadForGetBucketObjects
+                  Effect: Allow
+                  Principal: '*'
+                  Action: 
+                    - s3:GetObject
+                    - s3:PutObject
+                  Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+            Bucket: !Ref AttachmentsBucket

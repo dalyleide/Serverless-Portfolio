@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "todo",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "location": {
+        "type": "string"
+      },
+      "openDate": {
+        "type": "boolean"
+      },
+      "endDate": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  }

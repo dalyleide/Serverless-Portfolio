@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "todo",
+    "type": "object",
+    "properties": {
+      "startDate": {
+        "type": "string"
+      },
+      "travelPackegeId": {
+        "type": "string"
+      },
+      "qtdDays": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  }

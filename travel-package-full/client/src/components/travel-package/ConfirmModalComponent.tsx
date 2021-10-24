@@ -1,0 +1,26 @@
+import { Component } from "react";
+
+interface ConfirmModalComponentProps {
+    title: string, 
+    show: boolean,
+    content: string,
+    close: () => void
+}
+
+export class ConfirmModalComponent extends Component<ConfirmModalComponentProps> {
+
+    render() {
+        if (!this.props.show) {
+            return null
+        } else {
+            return <div className='modal'>
+                <div className='modal-content'>
+                    <h2>{this.props.title}</h2>
+                    <h3 className='modalText'>{this.props.content}</h3>
+                    <button  className='modalButton' onClick={()=> this.props.close()} >Ok, close</button>
+                </div>
+            </div>
+        }
+    }
+
+}
